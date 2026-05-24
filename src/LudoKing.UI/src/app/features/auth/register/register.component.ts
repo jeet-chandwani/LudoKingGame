@@ -21,6 +21,7 @@ export class RegisterComponent {
     private router: Router,
   ) {
     this.form = this.fb.group({
+      username:    ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]{1,10}$/)]],
       displayName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
       email:       ['', [Validators.required, Validators.email]],
       password:    ['', [Validators.required, Validators.minLength(8)]],
@@ -31,8 +32,8 @@ export class RegisterComponent {
     if (this.form.invalid) return;
     this.loading = true;
     this.error = '';
-    const { displayName, email, password } = this.form.value;
-    this.auth.register({ displayName: displayName!, email: email!, password: password! }).subscribe({
+    const { username, displayName, email, password } = this.form.value;
+    this.auth.register({ username: username!, displayName: displayName!, email: email!, password: password! }).subscribe({
       next: () => {
         this.success = 'Account created! Check your email to confirm before logging in.';
         this.loading = false;

@@ -11,6 +11,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasKey(u => u.Id);
         builder.Property(u => u.Id).HasDefaultValueSql("NEWSEQUENTIALID()");
 
+        builder.Property(u => u.Username).HasMaxLength(10).IsRequired();
+        builder.HasIndex(u => u.Username).IsUnique();
+
         builder.Property(u => u.Email).HasMaxLength(256).IsRequired();
         builder.HasIndex(u => u.Email).IsUnique();
 
@@ -30,6 +33,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasData(new User
         {
             Id = adminId,
+            Username = "funnyadmin",
             Email = "funnyadmin@ludoking.local",
             PasswordHash = "350000.6ZYBin8T8Y/1QDb/eI1I3Q==./x0zVi2LeqecCdOzQVyF6nRv/dkyrx77IWpPK01SqcE=",
             DisplayName = "funnyAdmin",

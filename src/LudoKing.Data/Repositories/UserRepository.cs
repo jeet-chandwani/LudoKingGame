@@ -14,6 +14,9 @@ internal sealed class UserRepository : IUserRepository
     public Task<User?> GetByIdAsync(Guid id, CancellationToken ct = default)
         => _ctx.Users.FirstOrDefaultAsync(u => u.Id == id, ct);
 
+    public Task<User?> GetByUsernameAsync(string username, CancellationToken ct = default)
+        => _ctx.Users.FirstOrDefaultAsync(u => u.Username == username.ToLowerInvariant(), ct);
+
     public Task<User?> GetByEmailAsync(string email, CancellationToken ct = default)
         => _ctx.Users.FirstOrDefaultAsync(u => u.Email == email.ToLowerInvariant(), ct);
 

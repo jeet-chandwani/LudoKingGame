@@ -24,7 +24,7 @@ export class AuthService {
   }
 
   login(req: LoginRequest): Observable<AuthResult> {
-    return this.http.post<AuthResult>(`${this.base}/login`, req, { withCredentials: true }).pipe(
+    return this.http.post<AuthResult>(`${this.base}/login`, { identifier: req.identifier, password: req.password }, { withCredentials: true }).pipe(
       tap(res => this.storeAuth(res))
     );
   }

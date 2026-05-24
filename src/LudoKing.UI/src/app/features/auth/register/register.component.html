@@ -9,6 +9,13 @@
       </mat-card>
       <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="!success">
         <mat-form-field appearance="outline">
+          <mat-label>User ID</mat-label>
+          <input matInput formControlName="username" autocomplete="username" maxlength="10">
+          <mat-hint>Alphanumeric, max 10 characters — used to log in</mat-hint>
+          <mat-error *ngIf="form.get('username')?.hasError('pattern')">Alphanumeric only, max 10 characters</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
           <mat-label>Display Name</mat-label>
           <input matInput formControlName="displayName" autocomplete="nickname">
           <mat-error *ngIf="form.get('displayName')?.hasError('minlength')">Min 3 characters</mat-error>

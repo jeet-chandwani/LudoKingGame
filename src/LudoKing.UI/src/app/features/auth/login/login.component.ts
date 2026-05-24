@@ -20,8 +20,8 @@ export class LoginComponent {
     private router: Router,
   ) {
     this.form = this.fb.group({
-      email:    ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
+      identifier: ['', Validators.required],
+      password:   ['', Validators.required],
     });
   }
 
@@ -29,9 +29,9 @@ export class LoginComponent {
     if (this.form.invalid) return;
     this.loading = true;
     this.error = '';
-    const { email, password } = this.form.value;
-    this.auth.login({ email: email!, password: password! }).subscribe({
-      next: () => this.router.navigate(['/lobby']),
+    const { identifier, password } = this.form.value;
+    this.auth.login({ identifier: identifier!, password: password! }).subscribe({
+      next: () => { this.loading = false; this.router.navigate(['/lobby']); },
       error: (e) => { this.error = e.error?.message ?? 'Login failed.'; this.loading = false; },
     });
   }

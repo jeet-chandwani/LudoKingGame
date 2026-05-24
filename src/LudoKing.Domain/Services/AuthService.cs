@@ -39,6 +39,12 @@ public sealed class AuthService : IAuthService
     // -------------------------------------------------------------------------
     public async Task<AuthResultDto> RegisterAsync(RegisterRequest req, CancellationToken ct = default)
     {
+        if (!System.Text.RegularExpressions.Regex.IsMatch(req.Username, @"^[a-zA-Z0-9]{1,10}$"))
+            throw new InvalidOperationException("Username must be alphanumeric and at most 10 characters.");
+
+        if (await _uow.Users.GetByUsernameAsync(req.Username, ct) is not null)
+            throw new InvalidOperationException("That username is already taken.");
+
         if (await _uow.Users.GetByEmailAsync(req.Email, ct) is not null)
             throw new InvalidOperationException("A user with this email already exists.");
 
@@ -48,6 +54,7 @@ public sealed class AuthService : IAuthService
         var user = new User
         {
             Id = Guid.NewGuid(),
+            Username = req.Username.ToLowerInvariant(),
             Email = req.Email.ToLowerInvariant(),
             PasswordHash = _passwordHasher.HashPassword(req.Password),
             DisplayName = req.DisplayName,
@@ -85,6 +92,7 @@ public sealed class AuthService : IAuthService
             AccessToken = string.Empty,
             ExpiresAt = DateTime.UtcNow,
             UserId = user.Id,
+            Username = user.Username,
             DisplayName = user.DisplayName,
             Role = user.Role
         };
@@ -95,11 +103,13 @@ public sealed class AuthService : IAuthService
     // -------------------------------------------------------------------------
     public async Task<AuthResultDto> LoginAsync(LoginRequest req, CancellationToken ct = default)
     {
-        var user = await _uow.Users.GetByEmailAsync(req.Email.ToLowerInvariant(), ct)
-            ?? throw new UnauthorizedAccessException("Invalid email or password.");
+        var identifier = req.Identifier.Trim().ToLowerInvariant();
+        var user = await _uow.Users.GetByUsernameAsync(identifier, ct)
+                ?? await _uow.Users.GetByEmailAsync(identifier, ct)
+                ?? throw new UnauthorizedAccessException("Invalid user ID/email or password.");
 
         if (!_passwordHasher.VerifyPassword(user.PasswordHash, req.Password))
-            throw new UnauthorizedAccessException("Invalid email or password.");
+            throw new UnauthorizedAccessException("Invalid user ID/email or password.");
 
         if (!user.IsActive)
             throw new UnauthorizedAccessException("Account is inactive.");
@@ -139,6 +149,7 @@ public sealed class AuthService : IAuthService
             AccessToken = accessToken,
             ExpiresAt = DateTime.UtcNow.AddMinutes(_authConfig.AccessTokenMinutes),
             UserId = user.Id,
+            Username = user.Username,
             DisplayName = user.DisplayName,
             Role = user.Role,
             RawRefreshToken = rawRefreshToken
@@ -194,6 +205,7 @@ public sealed class AuthService : IAuthService
             AccessToken = newAccessToken,
             ExpiresAt = DateTime.UtcNow.AddMinutes(_authConfig.AccessTokenMinutes),
             UserId = user.Id,
+            Username = user.Username,
             DisplayName = user.DisplayName,
             Role = user.Role,
             RawRefreshToken = newRawRefreshToken

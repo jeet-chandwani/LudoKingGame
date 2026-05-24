@@ -23,6 +23,16 @@ internal sealed class UserRepository : IUserRepository
     public Task<User?> GetByDisplayNameAsync(string displayName, CancellationToken ct = default)
         => _ctx.Users.FirstOrDefaultAsync(u => u.DisplayName == displayName, ct);
 
+    public async Task<Dictionary<Guid, string>> GetDisplayNamesByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default)
+    {
+        var idList = ids.Distinct().ToList();
+        return await _ctx.Users
+            .AsNoTracking()
+            .Where(u => idList.Contains(u.Id))
+            .Select(u => new { u.Id, u.DisplayName })
+            .ToDictionaryAsync(u => u.Id, u => u.DisplayName, ct);
+    }
+
     public async Task AddAsync(User user, CancellationToken ct = default)
         => await _ctx.Users.AddAsync(user, ct);
 

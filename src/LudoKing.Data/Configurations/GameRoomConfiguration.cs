@@ -20,6 +20,10 @@ public class GameRoomConfiguration : IEntityTypeConfiguration<GameRoom>
 
         builder.Property(r => r.Status).HasMaxLength(20);
 
+        // Covers GetOpenPublicRoomsAsync: WHERE Status='Waiting' AND IsPrivate=0 ORDER BY CreatedAt DESC
+        builder.HasIndex(r => new { r.Status, r.IsPrivate, r.CreatedAt })
+            .HasDatabaseName("IX_GameRooms_Status_IsPrivate_CreatedAt");
+
         builder.Property(r => r.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
 
         builder.HasOne<User>()

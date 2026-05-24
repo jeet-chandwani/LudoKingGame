@@ -10,11 +10,13 @@ namespace LudoKing.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly IWebHostEnvironment _env;
     private const string RefreshTokenCookie = "ludoking_refresh";
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, IWebHostEnvironment env)
     {
         _authService = authService;
+        _env = env;
     }
 
     /// <summary>Register a new user account.</summary>
@@ -139,22 +141,24 @@ public class AuthController : ControllerBase
 
     private void SetRefreshCookie(string value)
     {
+        bool isSecure = !_env.IsDevelopment();
         Response.Cookies.Append(RefreshTokenCookie, value, new CookieOptions
         {
             HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
+            Secure = isSecure,
+            SameSite = isSecure ? SameSiteMode.Strict : SameSiteMode.Lax,
             Expires = DateTimeOffset.UtcNow.AddDays(7)
         });
     }
 
     private void ClearRefreshCookie()
     {
+        bool isSecure = !_env.IsDevelopment();
         Response.Cookies.Delete(RefreshTokenCookie, new CookieOptions
         {
             HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict
+            Secure = isSecure,
+            SameSite = isSecure ? SameSiteMode.Strict : SameSiteMode.Lax
         });
     }
 }

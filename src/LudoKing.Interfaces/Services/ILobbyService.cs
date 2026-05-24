@@ -9,7 +9,7 @@ public interface ILobbyService
     Task<GameRoom> JoinRoomAsync(Guid userId, Guid roomId, string? joinCode, CancellationToken ct = default);
     Task LeaveRoomAsync(Guid userId, Guid roomId, CancellationToken ct = default);
     Task<GameRoom> GetRoomAsync(Guid roomId, CancellationToken ct = default);
-    Task<List<GameRoom>> GetPublicRoomsAsync(int page, int pageSize, CancellationToken ct = default);
+    Task<List<RoomSummaryDto>> GetPublicRoomsAsync(int page, int pageSize, CancellationToken ct = default);
     Task KickPlayerAsync(Guid hostUserId, Guid roomId, Guid targetUserId, CancellationToken ct = default);
     Task UpdateRulesAsync(Guid hostUserId, Guid roomId, RuleSetDto rules, CancellationToken ct = default);
     Task TransferHostAsync(Guid currentHostId, Guid roomId, Guid newHostId, CancellationToken ct = default);

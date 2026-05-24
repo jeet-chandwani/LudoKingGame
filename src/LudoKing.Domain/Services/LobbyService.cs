@@ -161,9 +161,23 @@ public sealed class LobbyService : ILobbyService
     // -------------------------------------------------------------------------
     // GetPublicRoomsAsync
     // -------------------------------------------------------------------------
-    public async Task<List<GameRoom>> GetPublicRoomsAsync(int page, int pageSize, CancellationToken ct = default)
+    public async Task<List<RoomSummaryDto>> GetPublicRoomsAsync(int page, int pageSize, CancellationToken ct = default)
     {
-        return await _uow.Rooms.GetOpenPublicRoomsAsync(page, pageSize, ct);
+        var rooms = await _uow.Rooms.GetOpenPublicRoomsAsync(page, pageSize, ct);
+
+        var hostIds = rooms.Select(r => r.HostUserId).Distinct();
+        var displayNames = await _uow.Users.GetDisplayNamesByIdsAsync(hostIds, ct);
+
+        return rooms.Select(r => new RoomSummaryDto
+        {
+            Id = r.Id,
+            Name = r.Name,
+            HostDisplayName = displayNames.TryGetValue(r.HostUserId, out var name) ? name : r.HostUserId.ToString(),
+            CurrentPlayers = r.CurrentPlayerCount,
+            MaxPlayers = r.MaxPlayers,
+            IsPrivate = r.IsPrivate,
+            Status = r.Status,
+        }).ToList();
     }
 
     // -------------------------------------------------------------------------

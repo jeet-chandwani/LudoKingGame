@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
+import { finalize } from 'rxjs';
 import { RoomSummary } from '../../../shared/models/lobby.models';
 
 @Component({
@@ -9,8 +11,11 @@ import { RoomSummary } from '../../../shared/models/lobby.models';
 })
 export class RoomListComponent implements OnInit {
   rooms: RoomSummary[] = [];
-  loading = true;
+  loading = false;
   displayedColumns = ['name', 'host', 'players', 'status', 'join'];
+
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   constructor(private http: HttpClient) {}
 
@@ -18,10 +23,15 @@ export class RoomListComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.http.get<RoomSummary[]>('/api/v1/rooms').subscribe({
-      next: rooms => { this.rooms = rooms; this.loading = false; },
-      error: ()   => { this.loading = false; },
-    });
+    this.http.get<RoomSummary[]>('/api/v1/rooms')
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => { this.loading = false; this.cdr.detectChanges(); })
+      )
+      .subscribe({
+        next: rooms => { this.rooms = rooms; },
+        error: () => {},
+      });
   }
 
   quickMatch(): void {

@@ -14,6 +14,7 @@ src/LudoKing.UI/.angular/
 
 # Secrets
 .env
+.env.example
 *.pfx
 *.key
 

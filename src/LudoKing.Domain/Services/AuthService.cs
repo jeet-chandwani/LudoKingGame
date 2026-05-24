@@ -293,6 +293,28 @@ public sealed class AuthService : IAuthService
     }
 
     // -------------------------------------------------------------------------
+    // ChangePasswordAsync
+    // -------------------------------------------------------------------------
+    public async Task ChangePasswordAsync(Guid userId, ChangePasswordRequest req, CancellationToken ct = default)
+    {
+        var user = await _uow.Users.GetByIdAsync(userId, ct)
+            ?? throw new InvalidOperationException("User not found.");
+
+        if (!_passwordHasher.VerifyPassword(user.PasswordHash, req.CurrentPassword))
+            throw new UnauthorizedAccessException("Current password is incorrect.");
+
+        if (req.NewPassword.Length < 6)
+            throw new InvalidOperationException("New password must be at least 6 characters.");
+
+        user.PasswordHash = _passwordHasher.HashPassword(req.NewPassword);
+        user.UpdatedAt = DateTime.UtcNow;
+        _uow.Users.Update(user);
+
+        await _uow.RefreshTokens.RevokeAllForUserAsync(userId, ct);
+        await _uow.SaveChangesAsync(ct);
+    }
+
+    // -------------------------------------------------------------------------
     // Private helpers
     // -------------------------------------------------------------------------
     private static string HashRefreshToken(string token)

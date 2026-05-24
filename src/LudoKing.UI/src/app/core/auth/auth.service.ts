@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { AuthResult, LoginRequest, RegisterRequest, ResetPasswordRequest } from '../../shared/models/auth.models';
+import { AuthResult, ChangePasswordRequest, LoginRequest, RegisterRequest, ResetPasswordRequest } from '../../shared/models/auth.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -39,6 +39,10 @@ export class AuthService {
     return this.http.post<void>(`${this.base}/logout`, {}, { withCredentials: true }).pipe(
       tap(() => this.clearAuth())
     );
+  }
+
+  changePassword(req: ChangePasswordRequest): Observable<void> {
+    return this.http.post<void>(`${this.base}/change-password`, req);
   }
 
   forgotPassword(email: string): Observable<void> {

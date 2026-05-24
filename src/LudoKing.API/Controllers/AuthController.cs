@@ -122,6 +122,26 @@ public class AuthController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>Change password for the currently authenticated user.</summary>
+    [HttpPost("change-password")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest req, CancellationToken ct)
+    {
+        string? value = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                     ?? User.FindFirst("sub")?.Value;
+        Guid userId = Guid.Parse(value!);
+
+        await _authService.ChangePasswordAsync(userId, req, ct);
+
+        // Clear the refresh cookie — user must log in again with the new password.
+        ClearRefreshCookie();
+
+        return NoContent();
+    }
+
     /// <summary>Confirm a user's email address via a token query string.</summary>
     [HttpGet("confirm-email")]
     [ProducesResponseType(StatusCodes.Status200OK)]

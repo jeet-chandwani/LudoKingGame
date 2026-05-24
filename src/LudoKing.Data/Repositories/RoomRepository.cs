@@ -19,6 +19,7 @@ internal sealed class RoomRepository : IRoomRepository
 
     public Task<List<GameRoom>> GetOpenPublicRoomsAsync(int page, int pageSize, CancellationToken ct = default)
         => _ctx.GameRooms
+            .AsNoTracking()
             .Where(r => r.Status == "Waiting" && !r.IsPrivate)
             .OrderByDescending(r => r.CreatedAt)
             .Skip((page - 1) * pageSize)

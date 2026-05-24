@@ -1,0 +1,71 @@
+<div class="page-container" *ngIf="!loading">
+  <mat-card style="max-width:700px">
+    <mat-card-header>
+      <mat-card-title>{{ profile?.displayName }}</mat-card-title>
+      <mat-card-subtitle>Member since {{ profile?.createdAt | date:'mediumDate' }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <!-- View mode -->
+      <div *ngIf="!editing">
+        <p><strong>Bio:</strong> {{ profile?.bio || 'No bio set.' }}</p>
+        <p><strong>Country:</strong> {{ profile?.countryCode || '–' }}</p>
+      </div>
+      <!-- Edit mode -->
+      <form [formGroup]="form" (ngSubmit)="save()" *ngIf="editing">
+        <mat-form-field appearance="outline" style="width:100%">
+          <mat-label>Display Name</mat-label>
+          <input matInput formControlName="displayName">
+        </mat-form-field>
+        <mat-form-field appearance="outline" style="width:100%">
+          <mat-label>Bio</mat-label>
+          <textarea matInput formControlName="bio" rows="3"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Country Code</mat-label>
+          <input matInput formControlName="countryCode" maxlength="2" placeholder="US">
+        </mat-form-field>
+        <div class="error-message" *ngIf="error">{{ error }}</div>
+        <button mat-raised-button color="primary" type="submit" [disabled]="saving">Save</button>
+        <button mat-button type="button" (click)="editing=false" style="margin-left:8px">Cancel</button>
+      </form>
+    </mat-card-content>
+    <mat-card-actions *ngIf="!editing">
+      <button mat-stroked-button (click)="editing=true">Edit Profile</button>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- Stats -->
+  <mat-card style="max-width:700px;margin-top:16px" *ngIf="stats">
+    <mat-card-header><mat-card-title>Statistics</mat-card-title></mat-card-header>
+    <mat-card-content>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;text-align:center">
+        <div><div style="font-size:24px;font-weight:bold">{{ stats.eloRating }}</div><div>ELO</div></div>
+        <div><div style="font-size:24px;font-weight:bold">{{ stats.gamesWon }}</div><div>Wins</div></div>
+        <div><div style="font-size:24px;font-weight:bold">{{ stats.gamesPlayed }}</div><div>Games</div></div>
+        <div><div style="font-size:24px;font-weight:bold">{{ stats.currentWinStreak }}</div><div>Streak</div></div>
+        <div><div style="font-size:24px;font-weight:bold">{{ stats.totalTokensCut }}</div><div>Tokens Cut</div></div>
+        <div><div style="font-size:24px;font-weight:bold">{{ stats.bestWinStreak }}</div><div>Best Streak</div></div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Match history -->
+  <mat-card style="max-width:700px;margin-top:16px" *ngIf="history.length">
+    <mat-card-header><mat-card-title>Match History</mat-card-title></mat-card-header>
+    <mat-card-content>
+      <mat-table [dataSource]="history">
+        <ng-container matColumnDef="date">
+          <mat-header-cell *matHeaderCellDef>Date</mat-header-cell>
+          <mat-cell *matCellDef="let h">{{ h.startedAt | date:'short' }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="result">
+          <mat-header-cell *matHeaderCellDef>Finish</mat-header-cell>
+          <mat-cell *matCellDef="let h">{{ h.finishPosition ? '#' + h.finishPosition + ' / ' + h.totalPlayers : '–' }}</mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="['date','result']"></mat-header-row>
+        <mat-row *matRowDef="let r; columns: ['date','result'];"></mat-row>
+      </mat-table>
+    </mat-card-content>
+  </mat-card>
+</div>
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>

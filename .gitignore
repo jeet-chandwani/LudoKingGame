@@ -1,0 +1,25 @@
+# .NET
+bin/
+obj/
+*.user
+.vs/
+*.suo
+.vscode/
+appsettings.Development.json
+
+# Angular
+src/LudoKing.UI/node_modules/
+src/LudoKing.UI/dist/
+src/LudoKing.UI/.angular/
+
+# Secrets
+.env
+*.pfx
+*.key
+
+# Claude Code
+.claude/
+
+# Misc
+.DS_Store
+Thumbs.db

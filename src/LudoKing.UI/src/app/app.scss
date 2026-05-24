@@ -1,0 +1,46 @@
+.game-layout {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  align-items: flex-start;
+
+  .board-area { flex: 0 0 auto; }
+
+  .side-panel {
+    flex: 1;
+    min-width: 240px;
+    max-width: 320px;
+  }
+}
+
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+
+  &.active-turn {
+    background: #e3f2fd;
+    border-radius: 4px;
+    padding-left: 4px;
+  }
+}
+
+.color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.game-over-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}

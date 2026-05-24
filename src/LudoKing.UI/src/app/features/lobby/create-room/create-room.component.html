@@ -1,0 +1,84 @@
+<div class="page-container">
+  <h2>Create Room</h2>
+  <mat-card style="max-width:640px">
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+
+        <mat-form-field appearance="outline" style="width:100%">
+          <mat-label>Room Name</mat-label>
+          <input matInput formControlName="name">
+        </mat-form-field>
+
+        <h3>Players</h3>
+        <div style="display:flex;gap:16px;flex-wrap:wrap">
+          <mat-form-field appearance="outline">
+            <mat-label>Max Players</mat-label>
+            <mat-select formControlName="maxPlayers">
+              <mat-option [value]="2">2</mat-option>
+              <mat-option [value]="3">3</mat-option>
+              <mat-option [value]="4">4</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Tokens per Player</mat-label>
+            <mat-select formControlName="tokensPerPlayer">
+              <mat-option *ngFor="let n of [1,2,3,4]" [value]="n">{{ n }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Bot Players</mat-label>
+            <mat-select formControlName="automatedPlayers">
+              <mat-option *ngFor="let n of [0,1,2,3]" [value]="n">{{ n }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <h3>Rules</h3>
+        <div style="display:flex;gap:24px;flex-wrap:wrap">
+          <mat-checkbox formControlName="requireSixToStart">Require 6 to start</mat-checkbox>
+          <mat-checkbox formControlName="extraTurnOnSix">Extra turn on 6</mat-checkbox>
+          <mat-checkbox formControlName="extraTurnOnCut">Extra turn on cut</mat-checkbox>
+          <mat-checkbox formControlName="stackProtection">Stack protection</mat-checkbox>
+          <mat-checkbox formControlName="stopOnFirstWinner">Stop on first winner</mat-checkbox>
+          <mat-checkbox formControlName="isPrivate">Private room</mat-checkbox>
+          <mat-checkbox formControlName="botRequireSixToStart">Bots require 6 to start</mat-checkbox>
+        </div>
+
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:16px">
+          <mat-form-field appearance="outline">
+            <mat-label>Home Entry Rule</mat-label>
+            <mat-select formControlName="homeEntryRule">
+              <mat-option value="Exact">Exact</mat-option>
+              <mat-option value="BounceBack">Bounce Back</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Safe Squares</mat-label>
+            <mat-select formControlName="safeSquaresMode">
+              <mat-option value="Standard">Standard</mat-option>
+              <mat-option value="Extended">Extended</mat-option>
+              <mat-option value="None">None</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Max Consecutive 6s</mat-label>
+            <input matInput type="number" formControlName="maxConsecutiveSixes" min="1" max="5">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Turn Timer (s, 0=off)</mat-label>
+            <input matInput type="number" formControlName="turnTimerSeconds" min="0" max="300">
+          </mat-form-field>
+        </div>
+
+        <div class="error-message" *ngIf="error">{{ error }}</div>
+
+        <div style="margin-top:16px">
+          <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+            {{ loading ? 'Creating…' : 'Create Room' }}
+          </button>
+          <a mat-button routerLink="/lobby" style="margin-left:8px">Cancel</a>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

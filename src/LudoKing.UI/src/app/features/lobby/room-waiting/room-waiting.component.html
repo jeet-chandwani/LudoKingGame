@@ -1,0 +1,45 @@
+<div class="page-container" *ngIf="!loading && room">
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+    <h2 style="margin:0">{{ room.name }}</h2>
+    <mat-chip *ngIf="room.isPrivate" color="accent" selected>
+      Private — Code: <strong>{{ room.joinCode }}</strong>
+      <button mat-icon-button style="width:24px;height:24px" (click)="copyJoinCode()">
+        <mat-icon style="font-size:16px">content_copy</mat-icon>
+      </button>
+    </mat-chip>
+  </div>
+
+  <mat-card>
+    <mat-card-content>
+      <h3>Players ({{ room.players.length }} / {{ room.rules.maxPlayers }})</h3>
+      <mat-list>
+        <mat-list-item *ngFor="let p of room.players">
+          <mat-icon matListItemIcon>{{ p.isHost ? 'star' : 'person' }}</mat-icon>
+          <span matListItemTitle>{{ p.displayName }} {{ p.userId === myUserId ? '(you)' : '' }}</span>
+          <span matListItemMeta>
+            <mat-chip [color]="p.isReady ? 'primary' : ''" selected>
+              {{ p.isReady ? 'Ready' : 'Not ready' }}
+            </mat-chip>
+            <button mat-icon-button color="warn" *ngIf="isHost && p.userId !== myUserId"
+                    (click)="kick(p.userId)" matTooltip="Kick player">
+              <mat-icon>close</mat-icon>
+            </button>
+          </span>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-stroked-button [color]="isReady ? 'warn' : 'primary'" (click)="toggleReady()">
+        {{ isReady ? 'Not Ready' : 'Ready' }}
+      </button>
+      <button mat-raised-button color="primary" *ngIf="isHost" (click)="startGame()"
+              style="margin-left:8px">
+        Start Game
+      </button>
+      <a mat-button routerLink="/lobby" style="margin-left:auto">Leave Room</a>
+    </mat-card-actions>
+  </mat-card>
+</div>
+
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>

@@ -1,0 +1,32 @@
+<mat-toolbar color="primary">
+  <a mat-button routerLink="/lobby" style="font-size:18px;font-weight:bold;color:white">
+    LudoKing
+  </a>
+  <span class="spacer"></span>
+
+  <ng-container *ngIf="auth.isLoggedIn; else guestNav">
+    <a mat-button routerLink="/lobby">Lobby</a>
+    <a mat-button routerLink="/leaderboard">Leaderboard</a>
+    <button mat-button [matMenuTriggerFor]="userMenu">
+      <mat-icon>account_circle</mat-icon>
+      {{ auth.currentUser?.displayName }}
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu">
+      <a mat-menu-item routerLink="/profile">
+        <mat-icon>person</mat-icon> Profile
+      </a>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon> Sign Out
+      </button>
+    </mat-menu>
+  </ng-container>
+
+  <ng-template #guestNav>
+    <a mat-button routerLink="/leaderboard">Leaderboard</a>
+    <a mat-button routerLink="/auth/login">Sign In</a>
+    <a mat-raised-button routerLink="/auth/register" style="margin-left:8px">Sign Up</a>
+  </ng-template>
+</mat-toolbar>
+
+<router-outlet></router-outlet>

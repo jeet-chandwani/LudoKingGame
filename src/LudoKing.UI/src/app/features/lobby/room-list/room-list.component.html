@@ -1,0 +1,54 @@
+<div class="page-container">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <h2 style="margin:0">Open Rooms</h2>
+    <div>
+      <button mat-stroked-button (click)="quickMatch()" style="margin-right:8px">
+        <mat-icon>flash_on</mat-icon> Quick Match
+      </button>
+      <a mat-raised-button color="primary" routerLink="/lobby/create">
+        <mat-icon>add</mat-icon> Create Room
+      </a>
+    </div>
+  </div>
+
+  <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+  <mat-table [dataSource]="rooms" *ngIf="!loading">
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef>Room</mat-header-cell>
+      <mat-cell *matCellDef="let r">{{ r.name }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="host">
+      <mat-header-cell *matHeaderCellDef>Host</mat-header-cell>
+      <mat-cell *matCellDef="let r">{{ r.hostDisplayName }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="players">
+      <mat-header-cell *matHeaderCellDef>Players</mat-header-cell>
+      <mat-cell *matCellDef="let r">{{ r.currentPlayers }} / {{ r.maxPlayers }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+      <mat-cell *matCellDef="let r">
+        <mat-chip [color]="r.status === 'Waiting' ? 'primary' : 'warn'" selected>{{ r.status }}</mat-chip>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="join">
+      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+      <mat-cell *matCellDef="let r">
+        <a mat-button color="primary" [routerLink]="['/lobby/room', r.id]">Join</a>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="padding:16px;text-align:center">
+        No open rooms. Create one!
+      </td>
+    </tr>
+  </mat-table>
+
+  <div style="margin-top:16px;text-align:right">
+    <button mat-icon-button (click)="load()" matTooltip="Refresh"><mat-icon>refresh</mat-icon></button>
+  </div>
+</div>

@@ -1,0 +1,66 @@
+<div class="game-layout" *ngIf="!gameOver">
+  <!-- Board -->
+  <div class="board-area">
+    <app-board [state]="state" [validMoves]="validMoves" [myUserId]="myUserId"></app-board>
+  </div>
+
+  <!-- Side panel -->
+  <div class="side-panel">
+    <!-- Players -->
+    <mat-card style="margin-bottom:12px">
+      <mat-card-header><mat-card-title>Players</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <div *ngFor="let p of state?.players" class="player-row"
+             [class.active-turn]="p.userId === state?.currentTurnUserId">
+          <span class="color-dot" [style.background]="colorHex[p.color]"></span>
+          <span>{{ p.isBot ? 'Bot' : 'Player' }} ({{ p.color }})</span>
+          <mat-chip *ngIf="p.hasFinished" color="primary" selected>#{{ p.finishPosition }}</mat-chip>
+          <mat-icon *ngIf="!p.isConnected" style="font-size:16px;color:#f44336">wifi_off</mat-icon>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Dice -->
+    <mat-card style="margin-bottom:12px;text-align:center;padding:16px">
+      <app-dice [values]="diceValues" [canRoll]="canRoll" (roll)="rollDice()"></app-dice>
+    </mat-card>
+
+    <!-- Valid moves -->
+    <mat-card style="margin-bottom:12px" *ngIf="validMoves.length">
+      <mat-card-header><mat-card-title>Select Move</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <button mat-stroked-button *ngFor="let m of validMoves" (click)="selectMove(m)"
+                style="margin:4px;display:block;width:100%">
+          Token {{ m.tokenIndex + 1 }} → sq {{ m.targetSquare === 999 ? 'HOME' : m.targetSquare }}
+          <mat-chip *ngIf="m.wouldCut" color="warn" selected style="font-size:11px;margin-left:4px">cut</mat-chip>
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Events log -->
+    <mat-card>
+      <mat-card-header><mat-card-title>Events</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <div *ngFor="let msg of statusMessages" style="font-size:13px;padding:2px 0;border-bottom:1px solid #eee">
+          {{ msg }}
+        </div>
+        <em *ngIf="!statusMessages.length" style="color:#999;font-size:13px">Waiting for game start…</em>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+<!-- Game Over overlay -->
+<div class="game-over-overlay" *ngIf="gameOver">
+  <mat-card class="form-card" style="max-width:480px;text-align:center">
+    <mat-card-header><mat-card-title>Game Over!</mat-card-title></mat-card-header>
+    <mat-card-content>
+      <div *ngFor="let r of gameOver.finalRankings" style="padding:8px 0">
+        <strong>#{{ r.position }}</strong> {{ r.displayName }}
+      </div>
+    </mat-card-content>
+    <mat-card-actions style="justify-content:center">
+      <a mat-raised-button color="primary" routerLink="/lobby">Back to Lobby</a>
+    </mat-card-actions>
+  </mat-card>
+</div>

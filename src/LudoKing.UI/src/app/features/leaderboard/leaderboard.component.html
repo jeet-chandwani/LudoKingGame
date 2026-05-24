@@ -1,0 +1,32 @@
+<div class="page-container">
+  <h2>Leaderboard</h2>
+  <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+  <mat-table [dataSource]="entries" *ngIf="!loading" class="mat-elevation-z2">
+    <ng-container matColumnDef="rank">
+      <mat-header-cell *matHeaderCellDef>#</mat-header-cell>
+      <mat-cell *matCellDef="let e">{{ e.rank }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="player">
+      <mat-header-cell *matHeaderCellDef>Player</mat-header-cell>
+      <mat-cell *matCellDef="let e">{{ e.displayName }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="elo">
+      <mat-header-cell *matHeaderCellDef>ELO</mat-header-cell>
+      <mat-cell *matCellDef="let e"><strong>{{ e.eloRating }}</strong></mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="wins">
+      <mat-header-cell *matHeaderCellDef>Wins</mat-header-cell>
+      <mat-cell *matCellDef="let e">{{ e.gamesWon }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="games">
+      <mat-header-cell *matHeaderCellDef>Games</mat-header-cell>
+      <mat-cell *matCellDef="let e">{{ e.gamesPlayed }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="winRate">
+      <mat-header-cell *matHeaderCellDef>Win%</mat-header-cell>
+      <mat-cell *matCellDef="let e">{{ (e.winRate * 100) | number:'1.0-0' }}%</mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+</div>
